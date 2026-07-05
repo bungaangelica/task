@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wet Grinding Process — Sand Mill Line</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0e15;
+    --bg2:#0d1220;
+    --panel:#111726;
+    --panel2:#0d1424;
+    --border:#212c42;
+    --border-soft:#1a2336;
+    --text:#e7ecf5;
+    --muted:#8b96ad;
+    --muted2:#5f6b83;
+    --amber:#eab308;
+    --amber-dim:#7a6111;
+    --water:#38bdf8;
+    --white-water:#7dd3fc;
+    --slurry:#c99a56;
+    --bypass:#f59e0b;
+    --drain:#ef4444;
+    --disp:#a78bfa;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans', -apple-system, sans-serif;
+    line-height:1.6;
+  }
+  ::selection{background:var(--amber-dim);color:#fff;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+
+  /* ---- ticker ---- */
+  .ticker-bar{
+    background:var(--panel2);
+    border-bottom:1px solid var(--border-soft);
+    overflow:hidden;
+    white-space:nowrap;
+    padding:6px 0;
+  }
+  .ticker-track{
+    display:inline-block;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:.03em;
+    color:var(--muted2);
+    animation:ticker 28s linear infinite;
+    padding-left:100%;
+  }
+  .ticker-track b{color:var(--amber);font-weight:600;}
+  @keyframes ticker{ to{ transform:translateX(-100%); } }
+
+  /* ---- nav ---- */
+  nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(10,14,21,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--border-soft);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 32px;
+  }
+  .brand{font-family:'IBM Plex Mono';font-weight:600;font-size:14px;letter-spacing:.04em;color:var(--text);}
+  .brand span{color:var(--amber);}
+  .navlinks{display:flex;gap:26px;}
+  .navlinks a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;transition:color .15s;}
+  .navlinks a:hover{color:var(--amber);}
+
+  /* ---- hero ---- */
+  .hero{
+    max-width:1100px;margin:0 auto;
+    padding:72px 32px 56px;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.12em;
+    color:var(--amber);text-transform:uppercase;margin-bottom:16px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .eyebrow::before{content:'';width:20px;height:1px;background:var(--amber);display:inline-block;}
+  h1{
+    font-size:40px;font-weight:600;line-height:1.2;
+    max-width:760px;letter-spacing:-.01em;
+  }
+  .hero p.lead{
+    margin-top:18px;color:var(--muted);font-size:16px;max-width:640px;
+  }
+  .stat-row{
+    display:flex;gap:0;margin-top:44px;
+    border-top:1px solid var(--border-soft);
+  }
+  .stat{
+    flex:1;padding:20px 24px 0;border-right:1px solid var(--border-soft);
+  }
+  .stat:last-child{border-right:none;}
+  .stat .num{font-family:'IBM Plex Mono';font-size:26px;font-weight:600;color:var(--amber);}
+  .stat .lbl{font-size:12.5px;color:var(--muted);margin-top:4px;}
+
+  /* ---- section shell ---- */
+  section{max-width:1100px;margin:0 auto;padding:64px 32px;}
+  section.alt{background:var(--panel2);max-width:none;border-top:1px solid var(--border-soft);border-bottom:1px solid var(--border-soft);}
+  section.alt .inner{max-width:1100px;margin:0 auto;padding:0 32px;}
+  h2{font-size:24px;font-weight:600;margin-bottom:6px;}
+  .section-sub{color:var(--muted);font-size:14px;margin-bottom:36px;max-width:600px;}
+
+  /* ---- process steps ---- */
+  .steps{display:flex;flex-direction:column;}
+  .step{
+    display:grid;grid-template-columns:64px 1fr;gap:20px;
+    padding:22px 0;border-top:1px solid var(--border-soft);
+  }
+  .step:last-child{border-bottom:1px solid var(--border-soft);}
+  .step-num{
+    font-family:'IBM Plex Mono';font-size:20px;font-weight:600;color:var(--amber);
+  }
+  .step-title{font-size:15.5px;font-weight:600;margin-bottom:4px;}
+  .step-desc{font-size:13.5px;color:var(--muted);max-width:640px;}
+  .step-tag{
+    display:inline-block;font-family:'IBM Plex Mono';font-size:10.5px;
+    color:var(--muted2);border:1px solid var(--border-soft);border-radius:4px;
+    padding:2px 7px;margin-top:8px;margin-right:6px;
+  }
+
+  /* ---- simulation section ---- */
+  .layout{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;margin-top:24px;}
+  .controls{flex:0 0 260px;display:flex;flex-direction:column;gap:8px;}
+  .scenario-btn{
+    text-align:left;background:var(--panel);border:1px solid var(--border-soft);color:var(--text);
+    padding:11px 12px;border-radius:8px;cursor:pointer;font-size:13px;line-height:1.4;
+    transition:border-color .15s, background .15s;font-family:'IBM Plex Sans';
+  }
+  .scenario-btn b{display:block;font-size:13px;color:var(--text);margin-bottom:2px;font-weight:600;}
+  .scenario-btn span{color:var(--muted);font-size:11.5px;}
+  .scenario-btn:hover{border-color:var(--amber);}
+  .scenario-btn.active{border-color:var(--amber);background:linear-gradient(0deg, rgba(234,179,8,0.08), rgba(234,179,8,0.08)), var(--panel);}
+  .scenario-btn.active b{color:var(--amber);}
+  .stage-num{
+    display:inline-block;width:18px;height:18px;border-radius:50%;
+    background:var(--border);color:var(--muted);font-size:11px;text-align:center;line-height:18px;margin-right:6px;
+    font-family:'IBM Plex Mono';
+  }
+  .scenario-btn.active .stage-num{background:var(--amber);color:#1c1500;}
+  .diagram-wrap{flex:1 1 620px;background:var(--panel);border:1px solid var(--border-soft);border-radius:10px;padding:10px 10px 4px;min-width:320px;}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:11.5px;color:var(--muted);padding:10px 4px 6px;border-top:1px solid var(--border-soft);margin-top:6px;}
+  .legend-item{display:flex;align-items:center;gap:6px;}
+  .swatch{width:16px;height:3px;border-radius:2px;display:inline-block;}
+  .dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+  .desc-box{margin-top:12px;background:var(--panel);border:1px solid var(--border-soft);border-radius:8px;padding:14px 16px;font-size:13px;color:var(--muted);}
+  .desc-box b{color:var(--text);}
+  .flow{stroke-dasharray:9 7;animation:flowmove 0.9s linear infinite;}
+  @keyframes flowmove{to{stroke-dashoffset:-16;}}
+  .flow-off{opacity:.15;}
+  .label-t{font-size:11px;fill:var(--text);font-family:'IBM Plex Sans';}
+  .label-m{font-size:11px;fill:var(--muted);font-family:'IBM Plex Sans';}
+  .label-mill{font-size:12px;font-weight:600;fill:var(--text);font-family:'IBM Plex Mono';}
+  .box-fill{fill:#16213b;stroke:var(--border);stroke-width:1;}
+  .tank-fill{fill:#152039;stroke:#2c3f66;stroke-width:1;}
+  .running-pulse{animation:pulse 1.4s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.55;}}
+  .idle-mill{opacity:.35;}
+
+  /* ---- glossary ---- */
+  .glossary{width:100%;border-collapse:collapse;}
+  .glossary tr{border-top:1px solid var(--border-soft);}
+  .glossary tr:last-child{border-bottom:1px solid var(--border-soft);}
+  .glossary td{padding:14px 10px;font-size:13.5px;vertical-align:top;}
+  .glossary td.term{font-family:'IBM Plex Mono';font-weight:600;color:var(--amber);width:180px;white-space:nowrap;}
+  .glossary td.def{color:var(--muted);}
+
+  footer{
+    border-top:1px solid var(--border-soft);
+    padding:28px 32px;text-align:center;
+    color:var(--muted2);font-size:12px;
+  }
+
+  @media (max-width:720px){
+    h1{font-size:28px;}
+    .stat-row{flex-direction:column;}
+    .stat{border-right:none;border-top:1px solid var(--border-soft);}
+    .stat:first-child{border-top:none;}
+    .navlinks{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="ticker-bar">
+  <div class="ticker-track mono">
+    SAND MILL LINE 1 &nbsp;·&nbsp; STATUS <b>NORMAL</b> &nbsp;·&nbsp; STAGE 1 H60 RUNNING &nbsp;·&nbsp; STAGE 2 H60 RUNNING &nbsp;·&nbsp; STAGE 3 SC RUNNING &nbsp;·&nbsp; PUMP BIN SSL01 OK &nbsp;·&nbsp; CENTRIFUGE 1 OK &nbsp;·&nbsp; NO ACTIVE ALARM
+  </div>
+</div>
+
+<nav>
+  <div class="brand">WET<span>GRIND</span>.SIM</div>
+  <div class="navlinks">
+    <a href="#ringkasan">Ringkasan</a>
+    <a href="#proses">Tahapan proses</a>
+    <a href="#simulasi">Simulasi</a>
+    <a href="#istilah">Istilah</a>
+  </div>
+</nav>
+
+<div class="hero" id="ringkasan">
+  <div class="eyebrow">Sand mill line &mdash; wet grinding</div>
+  <h1>Bagaimana sand mill line mengolah slurry, dari feed sampai centrifuge.</h1>
+  <p class="lead">Halaman ini merangkum proses wet grinding pada Sand Mill Line: 3 stage penggilingan seri, kombinasi fresh water / white water dan dispersant, hingga 5 skenario operasi yang bisa disimulasikan langsung di bawah.</p>
+  <div class="stat-row">
+    <div class="stat"><div class="num">3</div><div class="lbl">stage seri (mixing tank &rarr; sand mill)</div></div>
+    <div class="stat"><div class="num">2</div><div class="lbl">tipe sand mill: H60 &amp; SC</div></div>
+    <div class="stat"><div class="num">5</div><div class="lbl">skenario operasi yang disimulasikan</div></div>
+  </div>
+</div>
+
+<section id="proses">
+  <h2>Tahapan proses</h2>
+  <p class="section-sub">Urutan yang dilalui slurry pada satu stage, sebelum diteruskan ke stage berikutnya atau ke pump bin.</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div>
+        <div class="step-title">Feed masuk ke mixing tank</div>
+        <div class="step-desc">Slurry dari stage sebelumnya (atau main feed untuk stage 1) masuk ke mixing tank bersama air proses.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div>
+        <div class="step-title">Kondisioning dengan air &amp; dispersant</div>
+        <div class="step-desc">Fresh water atau white water ditambahkan untuk mengatur konsentrasi, dispersant dosis ditambahkan agar partikel tidak menggumpal.</div>
+        <span class="step-tag">fresh water</span><span class="step-tag">white water</span><span class="step-tag">dispersant</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div>
+        <div class="step-title">Penggilingan di sand mill</div>
+        <div class="step-desc">Slurry digiling untuk memperkecil ukuran partikel. Stage 1 &amp; 2 memakai tipe mill H60, stage 3 memakai tipe SC pada operasi normal.</div>
+        <span class="step-tag">H60</span><span class="step-tag">SC</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <div>
+        <div class="step-title">Transfer ke stage berikutnya, drain, atau bypass</div>
+        <div class="step-desc">Output mill diteruskan ke stage berikutnya. Jika perlu dikosongkan, valve drain di bawah mill dibuka. Jika kapasitas satu stage tidak cukup, sebagian atau seluruh aliran bisa di-bypass langsung ke pump bin.</div>
+        <span class="step-tag">drain valve</span><span class="step-tag">bypass</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">05</div>
+      <div>
+        <div class="step-title">Pump bin &amp; centrifuge</div>
+        <div class="step-desc">Slurry hasil stage terakhir ditampung di pump bin (SSL01) sebelum dipompa ke centrifuge untuk pemisahan ukuran partikel akhir.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="simulasi">
+  <div class="inner">
+    <h2>Simulasi 5 skenario operasi</h2>
+    <p class="section-sub">Pilih skenario untuk melihat perubahan valve, arah aliran, dan status mill secara visual.</p>
+
+    <div class="layout">
+      <div class="controls" id="controls"></div>
+
+      <div class="diagram-wrap">
+        <svg id="diagram" viewBox="0 0 1180 600" width="100%" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arrowWater" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#38bdf8"/>
+            </marker>
+            <marker id="arrowSlurry" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#c99a56"/>
+            </marker>
+            <marker id="arrowBypass" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#f59e0b"/>
+            </marker>
+            <marker id="arrowDrain" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#ef4444"/>
+            </marker>
+          </defs>
+
+          <text x="20" y="300" class="label-m">Main feed</text>
+
+          <path id="seg0" d="M20,310 L140,310" fill="none" stroke="#c99a56" stroke-width="3" marker-end="url(#arrowSlurry)"/>
+          <path id="seg1" d="M240,310 L510,310" fill="none" stroke="#c99a56" stroke-width="3" marker-end="url(#arrowSlurry)"/>
+          <path id="seg2" d="M610,310 L880,310" fill="none" stroke="#c99a56" stroke-width="3" marker-end="url(#arrowSlurry)"/>
+          <path id="seg3" d="M980,310 L1080,310" fill="none" stroke="#c99a56" stroke-width="3" marker-end="url(#arrowSlurry)"/>
+          <path id="segPumpToCent" d="M1130,300 L1130,180" fill="none" stroke="#c99a56" stroke-width="3" marker-end="url(#arrowSlurry)"/>
+
+          <path id="segBypass" d="M610,310 C 700,150 900,150 980,240" fill="none" stroke="#f59e0b" stroke-width="3" stroke-dasharray="9 7" marker-end="url(#arrowBypass)"/>
+          <text x="770" y="140" class="label-m" text-anchor="middle" fill="#f59e0b" id="bypassLabel">bypass stage 3</text>
+
+          <g id="stageGroup1">
+            <circle id="fw1" cx="140" cy="70" r="8" class="box-fill"/>
+            <text x="140" y="52" class="label-m" text-anchor="middle">Fresh water</text>
+            <path id="pipeFw1" d="M140,78 L140,150" fill="none" stroke="#38bdf8" stroke-width="2.5"/>
+
+            <circle id="ww1" cx="240" cy="70" r="8" class="box-fill"/>
+            <text x="240" y="52" class="label-m" text-anchor="middle">White water</text>
+            <path id="pipeWw1" d="M240,78 L240,150" fill="none" stroke="#7dd3fc" stroke-width="2.5"/>
+
+            <rect x="120" y="150" width="140" height="55" rx="6" class="tank-fill"/>
+            <text x="190" y="182" class="label-t" text-anchor="middle">Mixing tank 1</text>
+
+            <path d="M90,140 L120,175" fill="none" stroke="#a78bfa" stroke-width="2"/>
+            <circle cx="86" cy="136" r="7" class="box-fill" id="disp1b"/>
+            <text x="70" y="120" class="label-m" text-anchor="middle">Dispersant</text>
+
+            <path d="M190,205 L190,235" fill="none" stroke="#2c3f66" stroke-width="2"/>
+
+            <g id="mill1">
+              <polygon points="140,235 240,235 205,300 175,300" class="box-fill"/>
+              <text id="millLabel1" x="190" y="270" class="label-mill" text-anchor="middle">H60</text>
+            </g>
+
+            <path id="drain1" d="M190,300 L190,360" fill="none" stroke="#ef4444" stroke-width="2.5" marker-end="url(#arrowDrain)"/>
+            <circle id="drainValve1" cx="190" cy="335" r="7" fill="#475569" stroke="#0b1220" stroke-width="1"/>
+            <text x="190" y="380" class="label-m" text-anchor="middle">Drain</text>
+
+            <text x="190" y="420" class="label-t" text-anchor="middle" font-weight="600">Stage 1</text>
+            <text id="status1" x="190" y="438" class="label-m" text-anchor="middle">running</text>
+          </g>
+
+          <g id="stageGroup2">
+            <circle id="fw2" cx="510" cy="70" r="8" class="box-fill"/>
+            <text x="510" y="52" class="label-m" text-anchor="middle">Fresh water</text>
+            <path id="pipeFw2" d="M510,78 L510,150" fill="none" stroke="#38bdf8" stroke-width="2.5"/>
+
+            <circle id="ww2" cx="610" cy="70" r="8" class="box-fill"/>
+            <text x="610" y="52" class="label-m" text-anchor="middle">White water</text>
+            <path id="pipeWw2" d="M610,78 L610,150" fill="none" stroke="#7dd3fc" stroke-width="2.5"/>
+
+            <rect x="490" y="150" width="140" height="55" rx="6" class="tank-fill"/>
+            <text x="560" y="182" class="label-t" text-anchor="middle">Mixing tank 2</text>
+
+            <path d="M460,140 L490,175" fill="none" stroke="#a78bfa" stroke-width="2"/>
+            <circle cx="456" cy="136" r="7" class="box-fill" id="disp2b"/>
+            <text x="440" y="120" class="label-m" text-anchor="middle">Dispersant</text>
+
+            <path d="M560,205 L560,235" fill="none" stroke="#2c3f66" stroke-width="2"/>
+
+            <g id="mill2">
+              <polygon points="510,235 610,235 575,300 545,300" class="box-fill"/>
+              <text id="millLabel2" x="560" y="270" class="label-mill" text-anchor="middle">H60</text>
+            </g>
+
+            <path id="drain2" d="M560,300 L560,360" fill="none" stroke="#ef4444" stroke-width="2.5" marker-end="url(#arrowDrain)"/>
+            <circle id="drainValve2" cx="560" cy="335" r="7" fill="#475569" stroke="#0b1220" stroke-width="1"/>
+            <text x="560" y="380" class="label-m" text-anchor="middle">Drain</text>
+
+            <text x="560" y="420" class="label-t" text-anchor="middle" font-weight="600">Stage 2</text>
+            <text id="status2" x="560" y="438" class="label-m" text-anchor="middle">running</text>
+          </g>
+
+          <g id="stageGroup3">
+            <circle id="fw3" cx="880" cy="70" r="8" class="box-fill"/>
+            <text x="880" y="52" class="label-m" text-anchor="middle">Fresh water</text>
+            <path id="pipeFw3" d="M880,78 L880,150" fill="none" stroke="#38bdf8" stroke-width="2.5"/>
+
+            <circle id="ww3" cx="980" cy="70" r="8" class="box-fill"/>
+            <text x="980" y="52" class="label-m" text-anchor="middle">White water</text>
+            <path id="pipeWw3" d="M980,78 L980,150" fill="none" stroke="#7dd3fc" stroke-width="2.5"/>
+
+            <rect x="860" y="150" width="140" height="55" rx="6" class="tank-fill"/>
+            <text x="930" y="182" class="label-t" text-anchor="middle">Mixing tank 3</text>
+
+            <path d="M830,140 L860,175" fill="none" stroke="#a78bfa" stroke-width="2"/>
+            <circle cx="826" cy="136" r="7" class="box-fill" id="disp3b"/>
+            <text x="810" y="120" class="label-m" text-anchor="middle">Dispersant</text>
+
+            <path id="pipeToMill3" d="M930,205 L930,235" fill="none" stroke="#2c3f66" stroke-width="2"/>
+
+            <g id="mill3">
+              <polygon points="880,235 980,235 945,300 915,300" class="box-fill"/>
+              <text id="millLabel3" x="930" y="270" class="label-mill" text-anchor="middle">SC</text>
+            </g>
+
+            <path id="drain3" d="M930,300 L930,360" fill="none" stroke="#ef4444" stroke-width="2.5" marker-end="url(#arrowDrain)"/>
+            <circle id="drainValve3" cx="930" cy="335" r="7" fill="#475569" stroke="#0b1220" stroke-width="1"/>
+            <text x="930" y="380" class="label-m" text-anchor="middle">Drain</text>
+
+            <text x="930" y="420" class="label-t" text-anchor="middle" font-weight="600">Stage 3</text>
+            <text id="status3" x="930" y="438" class="label-m" text-anchor="middle">running</text>
+          </g>
+
+          <rect x="1080" y="280" width="100" height="60" rx="6" class="box-fill"/>
+          <text x="1130" y="306" class="label-t" text-anchor="middle">Pump bin</text>
+          <text x="1130" y="322" class="label-m" text-anchor="middle">SSL01</text>
+
+          <rect x="1080" y="120" width="100" height="60" rx="6" class="box-fill"/>
+          <text x="1130" y="146" class="label-t" text-anchor="middle">Centrifuge</text>
+          <text x="1130" y="162" class="label-m" text-anchor="middle" id="centStatus">running</text>
+        </svg>
+
+        <div class="legend">
+          <div class="legend-item"><span class="swatch" style="background:#c99a56;"></span>Slurry / produk</div>
+          <div class="legend-item"><span class="swatch" style="background:#38bdf8;"></span>Fresh water</div>
+          <div class="legend-item"><span class="swatch" style="background:#7dd3fc;"></span>White water</div>
+          <div class="legend-item"><span class="swatch" style="background:#f59e0b;"></span>Jalur bypass</div>
+          <div class="legend-item"><span class="swatch" style="background:#ef4444;"></span>Jalur drain</div>
+          <div class="legend-item"><span class="dot" style="background:#22c55e;"></span>Valve terbuka</div>
+          <div class="legend-item"><span class="dot" style="background:#475569;"></span>Valve tertutup</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="desc-box" id="descBox"></div>
+  </div>
+</section>
+
+<section id="istilah">
+  <h2>Istilah</h2>
+  <p class="section-sub">Singkatan dan istilah yang dipakai pada diagram di atas.</p>
+  <table class="glossary">
+    <tr><td class="term">Fresh water</td><td class="def">Air bersih / makeup water yang ditambahkan ke mixing tank, dipakai penuh saat flushing.</td></tr>
+    <tr><td class="term">White water</td><td class="def">Air proses hasil recycle yang dipakai sebagai media pengenceran saat produksi normal.</td></tr>
+    <tr><td class="term">Dispersant</td><td class="def">Bahan kimia yang ditambahkan agar partikel dalam slurry tidak menggumpal selama digiling.</td></tr>
+    <tr><td class="term">Sand mill H60 / SC</td><td class="def">Dua tipe unit penggiling (mill) yang dipakai pada tiap stage &mdash; berbeda kapasitas dan karakteristik penggilingan.</td></tr>
+    <tr><td class="term">Drain valve</td><td class="def">Valve di bagian bawah sand mill untuk mengeluarkan/mengosongkan isi mill saat maintenance atau pergantian produk.</td></tr>
+    <tr><td class="term">Bypass</td><td class="def">Jalur pipa yang melewati satu stage sand mill secara langsung, dipakai saat stage tersebut tidak dibutuhkan atau kapasitasnya tidak cukup.</td></tr>
+    <tr><td class="term">Pump bin (SSL01)</td><td class="def">Bak penampung sementara sebelum slurry dipompa menuju centrifuge.</td></tr>
+    <tr><td class="term">Centrifuge</td><td class="def">Unit pemisah akhir untuk memisahkan partikel berdasarkan ukuran sebelum produk disalurkan ke proses berikutnya.</td></tr>
+  </table>
+</section>
+
+<footer>
+  Ilustrasi proses &mdash; disederhanakan untuk keperluan edukasi/training, bukan replika presisi dari sistem SCADA aktual.
+</footer>
+
+<script>
+const scenarios = [
+  {
+    id: 'normal',
+    title: '1. Produksi normal',
+    sub: '3 stage berjalan (1&2 H60, 3 SC)',
+    desc: 'Semua stage berjalan seri: <b>Stage 1</b> dan <b>Stage 2</b> memakai sand mill tipe <b>H60</b>, sedangkan <b>Stage 3</b> memakai tipe <b>SC</b>. Air proses menggunakan <b>white water</b>, dispersant aktif di setiap stage, dan produk mengalir menerus menuju pump bin lalu ke centrifuge.',
+    stage1:{mill:'H60', running:true, fw:false, ww:true, disp:true, drain:false},
+    stage2:{mill:'H60', running:true, fw:false, ww:true, disp:true, drain:false},
+    stage3:{mill:'SC', running:true, fw:false, ww:true, disp:true, drain:false},
+    seg:{seg0:true, seg1:true, seg2:true, seg3:true, bypass:false, pumpCent:true},
+    stage3Mode:'inline'
+  },
+  {
+    id: 'flushing',
+    title: '2. Flushing',
+    sub: 'Hanya fresh water, tanpa produk',
+    desc: 'Semua valve <b>fresh water</b> dibuka penuh untuk membilas jalur pipa dan mill. <b>White water</b> dan <b>dispersant</b> ditutup karena tidak ada slurry yang diproses. Mill tidak beroperasi menggiling, hanya dilewati air pembilas menuju pump bin.',
+    stage1:{mill:'H60', running:false, fw:true, ww:false, disp:false, drain:false},
+    stage2:{mill:'H60', running:false, fw:true, ww:false, disp:false, drain:false},
+    stage3:{mill:'SC', running:false, fw:true, ww:false, disp:false, drain:false},
+    seg:{seg0:'water', seg1:'water', seg2:'water', seg3:'water', bypass:false, pumpCent:false},
+    stage3Mode:'inline'
+  },
+  {
+    id: 'drain',
+    title: '3. Drain sand mill',
+    sub: 'Valve bawah mill dibuka',
+    desc: 'Feed dan air proses dihentikan. Valve <b>drain</b> di bagian bawah setiap sand mill dibuka untuk mengeluarkan sisa slurry / material di dalam mill. Aliran menuju stage berikutnya dan pump bin dihentikan sementara.',
+    stage1:{mill:'H60', running:false, fw:false, ww:false, disp:false, drain:true},
+    stage2:{mill:'H60', running:false, fw:false, ww:false, disp:false, drain:true},
+    stage3:{mill:'SC', running:false, fw:false, ww:false, disp:false, drain:true},
+    seg:{seg0:false, seg1:false, seg2:false, seg3:false, bypass:false, pumpCent:false},
+    stage3Mode:'inline'
+  },
+  {
+    id: 'bypass1',
+    title: '4. Bypass 1 stage',
+    sub: 'Stage 3 dibagi 2 jalur',
+    desc: 'Stage 1 dan 2 berjalan normal. Karena kapasitas <b>Sand Mill stage 3</b> tidak kuat menampung seluruh aliran, produk dari stage 2 <b>dibagi menjadi 2 jalur</b>: sebagian tetap masuk ke sand mill stage 3, sebagian lagi <b>bypass langsung</b> menuju pump bin.',
+    stage1:{mill:'H60', running:true, fw:false, ww:true, disp:true, drain:false},
+    stage2:{mill:'H60', running:true, fw:false, ww:true, disp:true, drain:false},
+    stage3:{mill:'SC', running:true, fw:false, ww:true, disp:true, drain:false},
+    seg:{seg0:true, seg1:true, seg2:true, seg3:true, bypass:true, pumpCent:true},
+    stage3Mode:'split'
+  },
+  {
+    id: 'h60only',
+    title: '5. Produksi H60 only',
+    sub: 'Stage 1,2,3 H60, line 3 full bypass',
+    desc: 'Semua stage memakai sand mill tipe <b>H60</b>. Karena tidak semua stage diperlukan, <b>Stage 3 di-bypass total</b> &mdash; sand mill stage 3 tidak beroperasi dan seluruh produk dari stage 2 mengalir langsung melalui jalur bypass menuju pump bin.',
+    stage1:{mill:'H60', running:true, fw:false, ww:true, disp:true, drain:false},
+    stage2:{mill:'H60', running:true, fw:false, ww:true, disp:true, drain:false},
+    stage3:{mill:'H60', running:false, fw:false, ww:false, disp:false, drain:false},
+    seg:{seg0:true, seg1:true, seg2:true, seg3:false, bypass:true, pumpCent:true},
+    stage3Mode:'fullBypass'
+  }
+];
+
+const controlsEl = document.getElementById('controls');
+scenarios.forEach((s, i)=>{
+  const btn = document.createElement('button');
+  btn.className = 'scenario-btn';
+  btn.id = 'btn-'+s.id;
+  btn.innerHTML = '<b><span class="stage-num">'+(i+1)+'</span>'+s.title.replace(/^\d+\.\s*/,'')+'</b><span>'+s.sub+'</span>';
+  btn.onclick = ()=>applyScenario(s.id);
+  controlsEl.appendChild(btn);
+});
+
+function setValve(id, open, colorOpen){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.setAttribute('fill', open ? (colorOpen||'#22c55e') : '#475569');
+}
+
+function setPipe(id, mode){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.classList.remove('flow','flow-off');
+  if(mode===false){
+    el.classList.add('flow-off');
+    el.setAttribute('stroke', '#c99a56');
+  } else if(mode==='water'){
+    el.classList.add('flow');
+    el.setAttribute('stroke', '#38bdf8');
+    el.setAttribute('marker-end','url(#arrowWater)');
+  } else {
+    el.classList.add('flow');
+    el.setAttribute('stroke', '#c99a56');
+    el.setAttribute('marker-end','url(#arrowSlurry)');
+  }
+}
+
+function setMill(idx, running){
+  const g = document.getElementById('mill'+idx);
+  if(running){
+    g.classList.remove('idle-mill');
+    g.classList.add('running-pulse');
+  } else {
+    g.classList.add('idle-mill');
+    g.classList.remove('running-pulse');
+  }
+}
+
+function applyScenario(id){
+  const s = scenarios.find(x=>x.id===id);
+  if(!s) return;
+
+  document.querySelectorAll('.scenario-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('btn-'+id).classList.add('active');
+
+  [1,2,3].forEach(n=>{
+    const st = s['stage'+n];
+    document.getElementById('millLabel'+n).textContent = st.mill;
+    setMill(n, st.running);
+    setValve('fw'+n, st.fw, '#38bdf8');
+    setValve('ww'+n, st.ww, '#7dd3fc');
+    setValve('disp'+n+'b', st.disp, '#a78bfa');
+    setPipe('pipeFw'+n, st.fw ? 'water' : false);
+    setPipe('pipeWw'+n, st.ww ? 'water' : false);
+    setValve('drainValve'+n, st.drain, '#ef4444');
+    if(st.drain){
+      const d = document.getElementById('drain'+n);
+      d.setAttribute('stroke','#ef4444');
+      d.classList.add('flow');
+      d.classList.remove('flow-off');
+    } else {
+      const d = document.getElementById('drain'+n);
+      d.classList.add('flow-off');
+      d.classList.remove('flow');
+    }
+    document.getElementById('status'+n).textContent = st.drain ? 'draining' : (st.running ? 'running' : 'idle');
+  });
+
+  setPipe('seg0', s.seg.seg0);
+  setPipe('seg1', s.seg.seg1);
+  setPipe('seg2', s.seg.seg2);
+  setPipe('seg3', s.seg.seg3);
+  setPipe('segPumpToCent', s.seg.pumpCent);
+
+  const bypassEl = document.getElementById('segBypass');
+  const bypassLabel = document.getElementById('bypassLabel');
+  if(s.seg.bypass){
+    bypassEl.classList.remove('flow-off');
+    bypassEl.classList.add('flow');
+    bypassLabel.style.opacity = 1;
+  } else {
+    bypassEl.classList.add('flow-off');
+    bypassEl.classList.remove('flow');
+    bypassLabel.style.opacity = 0.25;
+  }
+
+  const pipeToMill3 = document.getElementById('pipeToMill3');
+  if(s.stage3Mode==='fullBypass'){
+    pipeToMill3.classList.add('flow-off');
+  } else {
+    pipeToMill3.classList.remove('flow-off');
+  }
+
+  document.getElementById('centStatus').textContent = s.seg.pumpCent ? 'running' : 'idle';
+
+  document.getElementById('descBox').innerHTML = '<b>'+s.title+'</b><br>'+s.desc;
+}
+
+applyScenario('normal');
+</script>
+
+</body>
+</html>
